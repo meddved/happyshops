@@ -10,6 +10,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * Controller should be as thin as possible
+ * It should actually invoke and call UseCase service class that actually is aware of domain logic
+ * Domain logic (Domain services) should not be aware of the code invoking it.
+ *
  * Class OrderController
  * @package App\Controller
  *
@@ -17,7 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class OrderController extends AbstractFOSRestController
 {
-
     /**
      * @param OrderService $orderService
      * @return Response
@@ -27,15 +30,17 @@ class OrderController extends AbstractFOSRestController
     public function getOrdersAction(OrderService $orderService) : Response
     {
         return $orderService->getOrders();
+    }
 
-//        return $this->container->get('')
-//        $em = $this->getDoctrine()->getManager();
-//        $orders = $em->getRepository(Order::class)->findAll();
-//
-//        if (!$orders) {
-//            throw new HttpException(400, 'Invalid data');
-//        }
-//
-//        return $orders;
+    /**
+     * @param int $id
+     * @param OrderService $orderService
+     * @return Response
+     *
+     * @Route("/order/{id}", name="get_order", methods={"GET"})
+     */
+    public function getOrderAction(int $id, OrderService $orderService) : Response
+    {
+        return $orderService->getOrder($id);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Tests\integration\Controller;
 
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -33,11 +34,29 @@ class OrderControllerTest extends WebTestCase
             die();
         }
 
-        self::assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(200, $response->getStatusCode());
 
         $orders = $response->getBody()->getContents();
-        self::assertCount(5, json_decode($orders));
+        $this->assertCount(5, json_decode($orders));
 
         //TODO: add more assertions
+    }
+
+    public function testGetOrder()
+    {
+        $response = $this->client->get('http://localhost:8000/api/order/1', []);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $order = json_decode($response->getBody()->getContents());
+        $this->assertEquals(1, $order->id);
+    }
+
+    public function testGetOrderException()
+    {
+        $this->expectException(ClientException::class);
+        $this->expectExceptionCode(404);
+        $this->expectExceptionMessage('Order not found');
+
+        $response = $this->client->get('http://localhost:8000/api/order/0', []);
     }
 }
