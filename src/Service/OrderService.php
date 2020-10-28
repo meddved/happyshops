@@ -1,15 +1,15 @@
 <?php
-
+declare(strict_types=1);
 
 namespace App\Service;
 
 use App\Entity\TOrders;
+use App\Exception\EntityNotFoundException;
 use App\Repository\TOrdersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OrderService
 {
@@ -58,12 +58,12 @@ class OrderService
 
 
         if (empty($orders)) {
-            throw new HttpException(404, 'No orders found');
+            throw new EntityNotFoundException('No orders found', Response::HTTP_NOT_FOUND);
         }
 
         $ordersJson = $this->serializer->serialize($orders, 'json');
 
-        return new Response($ordersJson, 200, ['Content-Type' => 'application/json']);
+        return new Response($ordersJson, Response::HTTP_OK, ['Content-Type' => 'application/json']);
     }
 
     /**
@@ -75,12 +75,12 @@ class OrderService
         $order = $this->entityManager->getRepository(TOrders::class)->find($id);
 
         if (empty($order)) {
-            throw new HttpException(404, 'Order not found');
+            throw new EntityNotFoundException('Order not found', Response::HTTP_NOT_FOUND);
         }
 
         $orderJson = $this->serializer->serialize($order, 'json');
 
-        return new Response($orderJson, 200, ['Content-Type' => 'application/json']);
+        return new Response($orderJson, Response::HTTP_OK, ['Content-Type' => 'application/json']);
     }
 
     /**

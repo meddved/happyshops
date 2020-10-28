@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace App\Controller;
 
@@ -31,8 +31,8 @@ class OrderController extends AbstractFOSRestController
      */
     public function getOrdersAction(Request $request, OrderService $orderService) : Response
     {
-        $page = $request->get('page') ?? 1;
-        $limit = $request->get('limit') ?? 1000;
+        $page = $request->get('page') ? (int) $request->get('page') : 1;
+        $limit = $request->get('limit') ? (int) $request->get('limit') : 1000;
         $filter = $request->get('filter') ?? '';
         if ('' !== $filter) {
             $filter = json_decode($filter, true);
