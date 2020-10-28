@@ -4,8 +4,10 @@
 namespace App\Service;
 
 use App\Entity\TOrders;
+use App\Repository\TOrdersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -13,25 +15,47 @@ class OrderService
 {
     private EntityManagerInterface $entityManager;
     private SerializerInterface $serializer;
+    private PaginatorInterface $paginator;
 
     /**
      * OrderService constructor.
      *
      * @param EntityManagerInterface $entityManager
      * @param SerializerInterface $serializer
+     * @param PaginatorInterface $paginator
      */
-    public function __construct(EntityManagerInterface $entityManager, SerializerInterface $serializer)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        SerializerInterface $serializer,
+        PaginatorInterface $paginator) {
+
         $this->entityManager = $entityManager;
         $this->serializer = $serializer;
+        $this->paginator = $paginator;
     }
 
     /**
+     * @param int $page
+     * @param int $limit
+     * @param array $filter
+     *
      * @return Response
      */
-    public function getOrders() : Response
+    public function getOrders(int $page = 1, int $limit = 1000, array $filter = []) : Response
     {
-        $orders = $this->entityManager->getRepository(TOrders::class)->findAll();
+        $queryBuilder = $this->getOrderRepository()->createFindAllQuery();
+
+        if (!empty($filter)) {
+            $queryBuilder = $this->getOrderRepository()->createFindFilteredQuery($filter);
+        }
+        if ($page) {
+            $orders = $this->paginator->paginate(
+                $queryBuilder->getQuery(),
+                $page,
+                $limit
+            );
+        }
+
 
         if (empty($orders)) {
             throw new HttpException(404, 'No orders found');
@@ -57,5 +81,13 @@ class OrderService
         $orderJson = $this->serializer->serialize($order, 'json');
 
         return new Response($orderJson, 200, ['Content-Type' => 'application/json']);
+    }
+
+    /**
+     * @return TOrdersRepository
+     */
+    private function getOrderRepository() : TOrdersRepository
+    {
+        return $this->entityManager->getRepository(TOrders::class);
     }
 }

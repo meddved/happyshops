@@ -6,7 +6,6 @@ namespace App\Tests\integration\Controller;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class OrderControllerTest extends WebTestCase
@@ -15,7 +14,9 @@ class OrderControllerTest extends WebTestCase
 
     protected function setUp()
     {
-        $this->client = new Client();
+        $this->client = new Client([
+            'base_uri' => 'http://localhost:8000'
+        ]);
     }
 
     protected function tearDown(): void
@@ -26,25 +27,41 @@ class OrderControllerTest extends WebTestCase
 
     public function testGetOrders()
     {
-        try {
-            $response = $this->client->get('http://localhost:8000/api/orders', []);
-        } catch (GuzzleException $e) {
-            //TODO: this exception should be handled
-            var_dump($e->getMessage());
-            die();
-        }
-
+        $response = $this->client->get('/api/orders', []);
         $this->assertEquals(200, $response->getStatusCode());
+        $orders = json_decode($response->getBody()->getContents());
 
-        $orders = $response->getBody()->getContents();
-        $this->assertCount(5, json_decode($orders));
+        $this->assertEquals(1, $orders->currentPage);
+        $this->assertEquals(1000, $orders->itemsPerPage);
+        $this->assertEquals(5, $orders->totalItems);
+        $this->assertCount(5, $orders->data);
+    }
 
-        //TODO: add more assertions
+    public function testGetOrdersPaging()
+    {
+        $response = $this->client->get('/api/orders?page=2&limit=1', []);
+        $this->assertEquals(200, $response->getStatusCode());
+        $orders = json_decode($response->getBody()->getContents());
+
+        $this->assertCount(1, $orders->data);
+        $order = array_shift($orders->data);
+        $this->assertEquals(2, $order->id);
+    }
+
+    public function testGetOrdersFilter()
+    {
+        $response = $this->client->get('/api/orders?filter={"id":1,"active":1}', []);
+        $this->assertEquals(200, $response->getStatusCode());
+        $orders = json_decode($response->getBody()->getContents());
+
+        $this->assertCount(1, $orders->data);
+        $order = array_shift($orders->data);
+        $this->assertEquals(1, $order->id);
     }
 
     public function testGetOrder()
     {
-        $response = $this->client->get('http://localhost:8000/api/order/1', []);
+        $response = $this->client->get('/api/order/1', []);
 
         $this->assertEquals(200, $response->getStatusCode());
         $order = json_decode($response->getBody()->getContents());
@@ -57,6 +74,6 @@ class OrderControllerTest extends WebTestCase
         $this->expectExceptionCode(404);
         $this->expectExceptionMessage('Order not found');
 
-        $response = $this->client->get('http://localhost:8000/api/order/0', []);
+        $response = $this->client->get('/api/order/0', []);
     }
 }

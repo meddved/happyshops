@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TOrders
  *
  * @ORM\Table(name="t_orders", indexes={@ORM\Index(name="Billing_Address", columns={"billing_address_id"}), @ORM\Index(name="Delivery_Address", columns={"delivery_address_id"}), @ORM\Index(name="FK_t_orders_t_billing_status", columns={"billing_status_id"}), @ORM\Index(name="t_orders_active", columns={"active"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="App\Repository\TOrdersRepository")
  */
 class TOrders
 {

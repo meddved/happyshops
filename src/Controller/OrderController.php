@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Service\OrderService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,14 +23,24 @@ use Symfony\Component\Routing\Annotation\Route;
 class OrderController extends AbstractFOSRestController
 {
     /**
+     * @param Request $request
      * @param OrderService $orderService
      * @return Response
      *
      * @Route("/orders", name="get_orders", methods={"GET"})
      */
-    public function getOrdersAction(OrderService $orderService) : Response
+    public function getOrdersAction(Request $request, OrderService $orderService) : Response
     {
-        return $orderService->getOrders();
+        $page = $request->get('page') ?? 1;
+        $limit = $request->get('limit') ?? 1000;
+        $filter = $request->get('filter') ?? '';
+        if ('' !== $filter) {
+            $filter = json_decode($filter, true);
+        } else {
+            $filter = [];
+        }
+
+        return $orderService->getOrders($page, $limit, $filter);
     }
 
     /**
@@ -37,7 +48,7 @@ class OrderController extends AbstractFOSRestController
      * @param OrderService $orderService
      * @return Response
      *
-     * @Route("/order/{id}", name="get_order", methods={"GET"})
+     * @Route("/order/{id}", name="get_order", methods={"GET"}, requirements={"id"="\d+"})
      */
     public function getOrderAction(int $id, OrderService $orderService) : Response
     {
