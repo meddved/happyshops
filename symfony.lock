@@ -137,6 +137,19 @@
     "monolog/monolog": {
         "version": "2.1.1"
     },
+    "nelmio/api-doc-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "c8e0c38e1a280ab9e37587a8fa32b251d5bc1c94"
+        },
+        "files": [
+            "config/packages/nelmio_api_doc.yaml",
+            "config/routes/nelmio_api_doc.yaml"
+        ]
+    },
     "nikic/php-parser": {
         "version": "v4.10.2"
     },
@@ -145,6 +158,15 @@
     },
     "php": {
         "version": "7.4"
+    },
+    "phpdocumentor/reflection-common": {
+        "version": "2.2.0"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "5.2.2"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "1.4.0"
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -178,6 +200,9 @@
         "files": [
             "config/packages/sensio_framework_extra.yaml"
         ]
+    },
+    "symfony/asset": {
+        "version": "v5.1.8"
     },
     "symfony/cache": {
         "version": "v5.1.7"
@@ -310,6 +335,9 @@
             "config/packages/test/monolog.yaml"
         ]
     },
+    "symfony/options-resolver": {
+        "version": "v5.1.8"
+    },
     "symfony/orm-pack": {
         "version": "v2.0.0"
     },
@@ -345,6 +373,9 @@
     },
     "symfony/profiler-pack": {
         "version": "v1.0.5"
+    },
+    "symfony/property-info": {
+        "version": "v5.1.8"
     },
     "symfony/routing": {
         "version": "5.1",
@@ -447,10 +478,16 @@
     "webimpress/safe-writer": {
         "version": "2.1.0"
     },
+    "webmozart/assert": {
+        "version": "1.9.1"
+    },
     "willdurand/jsonp-callback-validator": {
         "version": "v1.1.0"
     },
     "willdurand/negotiation": {
         "version": "v2.3.1"
+    },
+    "zircote/swagger-php": {
+        "version": "3.1.0"
     }
 }

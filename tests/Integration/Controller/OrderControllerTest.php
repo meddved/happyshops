@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\integration\Controller;
+namespace App\Tests\Integration\Controller;
 
 
 use GuzzleHttp\Client;

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Service\OrderService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,6 +28,15 @@ class OrderController extends AbstractFOSRestController
      * @return Response
      *
      * @Route("/orders", name="get_orders", methods={"GET"})
+     *
+     * @OA\Response(response=200, description="Returns the list of orders")
+     *
+     * @OA\Parameter (name="page", in="query", description="Page from which to start listing.")
+     * @OA\Parameter (name="limit", in="query", description="How many items per page we are listing. Default: 1000")
+     * @OA\Parameter (name="sort", in="query", description="Field to sort list to. Default: orders.id.")
+     * @OA\Parameter (name="direction", in="query", description="Direction of sorting. Default: asc")
+     * @OA\Parameter (name="filter", in="query", description="Filter for filtering results. Example: filter='id':1'active':1}")
+     *
      */
     public function getOrdersAction(Request $request, OrderService $orderService) : Response
     {
@@ -49,6 +58,8 @@ class OrderController extends AbstractFOSRestController
      * @return Response
      *
      * @Route("/order/{id}", name="get_order", methods={"GET"}, requirements={"id"="\d+"})
+     *
+     * @OA\Response(response=200, description="Returns one order by ID")
      */
     public function getOrderAction(int $id, OrderService $orderService) : Response
     {
